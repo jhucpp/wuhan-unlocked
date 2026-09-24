@@ -69,6 +69,14 @@
   }
   @media (max-width:640px){ .site-nav-links{ display:none; } }
 
+  .lang-toggle{ display:flex; gap:2px; background:var(--surface-2); border-radius:100px; padding:3px; flex:none; }
+  .lang-btn{
+    border:none; background:none; padding:5px 11px; border-radius:100px; cursor:pointer;
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.03em;
+    color:var(--muted); transition:background 0.15s ease, color 0.15s ease;
+  }
+  .lang-btn[aria-pressed="true"]{ background:var(--accent-pink); color:#0A0F12; font-weight:700; }
+
   /* ---------- SCROLL REVEAL (safe fallback: visible unless JS adds pre-reveal) ---------- */
   .reveal{ opacity:1; transform:none; transition:opacity 0.7s ease, transform 0.7s ease; }
   .reveal.pre-reveal{ opacity:0; transform:translateY(18px); }
@@ -415,10 +423,14 @@
     <div class="site-nav-inner">
       <span class="brand">武汉 WUHAN</span>
       <div class="site-nav-links">
-        <a href="#geography">Map</a>
-        <a href="#explore">Explore</a>
-        <a href="#plan">Plan</a>
-        <a href="#before-you-go">Before you go</a>
+        <a href="#geography" data-i18n="navMap">Map</a>
+        <a href="#explore" data-i18n="navExplore">Explore</a>
+        <a href="#plan" data-i18n="navPlan">Plan</a>
+        <a href="#before-you-go" data-i18n="navBefore">Before you go</a>
+      </div>
+      <div class="lang-toggle" role="group" aria-label="Language / 语言">
+        <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
       </div>
       <span id="navStatus" class="mono">0 places · $0</span>
     </div>
@@ -426,17 +438,17 @@
 
   <section class="hero">
     <div class="hero-inner">
-      <div class="eyebrow">CENTRAL CHINA &middot; HUBEI PROVINCE</div>
-      <h1>WUHAN</h1>
-      <div class="tagline">isn't on your radar yet. It should be.</div>
-      <p class="lede">Two rivers crash into each other here, 1.3 million college students take over the streets every night, and breakfast is a bowl of noodles engineered to be eaten in under four minutes. This is the case for spending Thanksgiving break in the city that taught China how to build a bridge across the Yangtze &mdash; and never really slowed down since.</p>
+      <div class="eyebrow" data-i18n="heroEyebrow">CENTRAL CHINA &middot; HUBEI PROVINCE</div>
+      <h1 data-i18n="heroTitle">WUHAN</h1>
+      <div class="tagline" data-i18n="heroTagline">isn't on your radar yet. It should be.</div>
+      <p class="lede" data-i18n="heroLede">Two rivers crash into each other here, 1.3 million college students take over the streets every night, and breakfast is a bowl of noodles engineered to be eaten in under four minutes. This is the case for spending Thanksgiving break in the city that taught China how to build a bridge across the Yangtze &mdash; and never really slowed down since.</p>
       <div class="stat-strip">
-        <span class="stat-chip"><b>1957</b> &mdash; first bridge ever built over the Yangtze</span>
-        <span class="stat-chip"><b>83</b> universities, one city</span>
-        <span class="stat-chip"><b>2,400+ yrs</b> old bells that still play in tune</span>
-        <span class="stat-chip">red maple season: <b>November</b></span>
+        <span class="stat-chip" data-i18n-html="stat1"><b>1957</b> &mdash; first bridge ever built over the Yangtze</span>
+        <span class="stat-chip" data-i18n-html="stat2"><b>83</b> universities, one city</span>
+        <span class="stat-chip" data-i18n-html="stat3"><b>2,400+ yrs</b> old bells that still play in tune</span>
+        <span class="stat-chip" data-i18n-html="stat4">red maple season: <b>November</b></span>
       </div>
-      <button class="hero-cta" type="button" onclick="document.getElementById('explore').scrollIntoView()">Start building your trip ↓</button>
+      <button class="hero-cta" type="button" data-i18n="heroCta" onclick="document.getElementById('explore').scrollIntoView()">Start building your trip ↓</button>
     </div>
     <div class="skyline" aria-hidden="true">
       <svg viewBox="0 0 1000 220" preserveAspectRatio="none">
@@ -495,67 +507,67 @@
 
   <section class="section" id="geography">
     <div class="section-head">
-      <div class="eyebrow">Get your bearings</div>
-      <h2>Three cities, stitched together by bridges</h2>
-      <p>Wuhan isn't really one city &mdash; it's Wuchang, Hankou, and Hanyang, three separate towns split apart by the Yangtze and Han rivers and welded back together by bridges (starting with the one that finally connected them in 1957). Here's the rough layout, not to scale &mdash; every pin links to the real map below.</p>
+      <div class="eyebrow" data-i18n="geoEyebrow">Get your bearings</div>
+      <h2 data-i18n="geoHeading">Three cities, stitched together by bridges</h2>
+      <p data-i18n="geoDesc">Wuhan isn't really one city &mdash; it's Wuchang, Hankou, and Hanyang, three separate towns split apart by the Yangtze and Han rivers and welded back together by bridges (starting with the one that finally connected them in 1957). Here's the rough layout, not to scale &mdash; every pin links to the real map below.</p>
     </div>
     <div class="map-card reveal">
-      <svg viewBox="0 0 760 480" role="img" aria-label="Stylized map of Wuhan's three districts: Hankou, Hanyang, and Wuchang, divided by the Yangtze and Han rivers">
+      <svg id="mapSvg" viewBox="0 0 760 480" role="img" aria-label="Stylized map of Wuhan's three districts: Hankou, Hanyang, and Wuchang, divided by the Yangtze and Han rivers">
         <rect x="20" y="20" width="310" height="190" rx="14" fill="var(--surface-2)" stroke="var(--line)"/>
         <rect x="20" y="236" width="310" height="224" rx="14" fill="var(--surface-2)" stroke="var(--line)"/>
         <rect x="410" y="20" width="330" height="440" rx="14" fill="var(--surface-2)" stroke="var(--line)"/>
         <rect x="20" y="210" width="310" height="26" fill="var(--focus)" opacity="0.35"/>
         <rect x="330" y="20" width="80" height="440" fill="var(--focus)" opacity="0.35"/>
-        <text x="175" y="45" text-anchor="middle" class="mono" font-size="13" font-weight="700" fill="var(--ink)">HANKOU</text>
-        <text x="175" y="260" text-anchor="middle" class="mono" font-size="13" font-weight="700" fill="var(--ink)">HANYANG</text>
-        <text x="575" y="45" text-anchor="middle" class="mono" font-size="13" font-weight="700" fill="var(--ink)">WUCHANG</text>
-        <text x="370" y="240" text-anchor="middle" class="mono" font-size="10" fill="var(--ink)" transform="rotate(-90 370 240)" letter-spacing="1">YANGTZE RIVER</text>
-        <text x="175" y="227" text-anchor="middle" class="mono" font-size="9" fill="var(--ink)" letter-spacing="1">HAN RIVER</text>
+        <text data-i18n="mapHankou" x="175" y="45" text-anchor="middle" class="mono" font-size="13" font-weight="700" fill="var(--ink)">HANKOU</text>
+        <text data-i18n="mapHanyang" x="175" y="260" text-anchor="middle" class="mono" font-size="13" font-weight="700" fill="var(--ink)">HANYANG</text>
+        <text data-i18n="mapWuchang" x="575" y="45" text-anchor="middle" class="mono" font-size="13" font-weight="700" fill="var(--ink)">WUCHANG</text>
+        <text data-i18n="mapYangtze" x="370" y="240" text-anchor="middle" class="mono" font-size="10" fill="var(--ink)" transform="rotate(-90 370 240)" letter-spacing="1">YANGTZE RIVER</text>
+        <text data-i18n="mapHan" x="175" y="227" text-anchor="middle" class="mono" font-size="9" fill="var(--ink)" letter-spacing="1">HAN RIVER</text>
 
         <ellipse cx="640" cy="160" rx="70" ry="55" fill="var(--focus)" opacity="0.28"/>
-        <text x="640" y="160" text-anchor="middle" class="mono" font-size="10" fill="var(--ink)">EAST LAKE</text>
+        <text data-i18n="mapEastLake" x="640" y="160" text-anchor="middle" class="mono" font-size="10" fill="var(--ink)">EAST LAKE</text>
 
         <line x1="330" y1="70" x2="410" y2="70" stroke="var(--ink)" stroke-width="2" stroke-dasharray="3 4"/>
-        <text x="345" y="62" class="mono" font-size="8" fill="var(--muted)">BRIDGE</text>
+        <text data-i18n="mapBridge" x="345" y="62" class="mono" font-size="8" fill="var(--muted)">BRIDGE</text>
 
         <g class="mono" font-size="10.5" fill="var(--ink)">
           <circle class="map-pin" cx="70" cy="100" r="5" style="fill:var(--cat-food);color:var(--cat-food)"/>
-          <text x="82" y="104">Jianghan Road</text>
+          <text data-i18n="pinJianghan" x="82" y="104">Jianghan Road</text>
 
           <circle class="map-pin" cx="70" cy="150" r="5" style="fill:var(--cat-iconic);color:var(--cat-iconic)"/>
-          <text x="82" y="154">Wuhan Center Deck</text>
+          <text data-i18n="pinSkyDeck" x="82" y="154">Wuhan Center Deck</text>
 
           <circle class="map-pin" cx="130" cy="330" r="5" style="fill:var(--cat-culture);color:var(--cat-culture)"/>
-          <text x="142" y="334">Guiyuan Temple</text>
+          <text data-i18n="pinGuiyuan" x="142" y="334">Guiyuan Temple</text>
 
           <circle class="map-pin" cx="470" cy="60" r="5" style="fill:var(--cat-iconic);color:var(--cat-iconic)"/>
-          <text x="482" y="64">Yellow Crane Tower</text>
+          <text data-i18n="pinYcTower" x="482" y="64">Yellow Crane Tower</text>
 
           <circle class="map-pin" cx="470" cy="100" r="5" style="fill:var(--cat-food);color:var(--cat-food)"/>
-          <text x="482" y="104">Hubu Alley</text>
+          <text data-i18n="pinHubu" x="482" y="104">Hubu Alley</text>
 
           <circle class="map-pin" cx="470" cy="140" r="5" style="fill:var(--cat-culture);color:var(--cat-culture)"/>
-          <text x="482" y="144">Hubei Museum</text>
+          <text data-i18n="pinMuseum" x="482" y="144">Hubei Museum</text>
 
           <circle class="map-pin" cx="560" cy="250" r="5" style="fill:var(--cat-outdoors);color:var(--cat-outdoors)"/>
-          <text x="572" y="254">East Lake activities</text>
+          <text data-i18n="pinEastLakeArea" x="572" y="254">East Lake activities</text>
 
           <circle class="map-pin" cx="620" cy="330" r="5" style="fill:var(--cat-nightlife);color:var(--cat-nightlife)"/>
-          <text x="632" y="334">Optics Valley Gaming</text>
+          <text data-i18n="pinGaming" x="632" y="334">Optics Valley Gaming</text>
 
           <circle class="map-pin" cx="370" cy="150" r="5" style="fill:var(--cat-nightlife);color:var(--cat-nightlife)"/>
-          <text x="333" y="145" text-anchor="end">Night Cruise</text>
+          <text data-i18n="pinCruise" x="333" y="145" text-anchor="end">Night Cruise</text>
         </g>
       </svg>
-      <div class="map-caption">Tap "Map" on any place card below to open the real, accurate map.</div>
+      <div class="map-caption" data-i18n="mapCaption">Tap "Map" on any place card below to open the real, accurate map.</div>
     </div>
   </section>
 
   <section class="section" id="explore">
     <div class="section-head">
-      <div class="eyebrow">Everything on the table</div>
-      <h2>Explore Wuhan</h2>
-      <p>13 places across food, culture, outdoors, nightlife, and the iconic stuff. Each one has a budget estimate, a real map link, a way to learn more, and a way to book. Tap a day number on any card to drop it into your plan below.</p>
+      <div class="eyebrow" data-i18n="exploreEyebrow">Everything on the table</div>
+      <h2 data-i18n="exploreHeading">Explore Wuhan</h2>
+      <p data-i18n="exploreDesc">13 places across food, culture, outdoors, nightlife, and the iconic stuff. Each one has a budget estimate, a real map link, a way to learn more, and a way to book. Tap a day number on any card to drop it into your plan below.</p>
     </div>
     <div class="filter-tabs" id="filterTabs" role="group" aria-label="Filter by category"></div>
     <div class="place-grid" id="exploreGrid"></div>
@@ -563,20 +575,20 @@
 
   <section class="section" id="plan">
     <div class="section-head">
-      <div class="eyebrow">Your call</div>
-      <h2>Build your trip</h2>
-      <p>Set how many days you've got, then assign places from Explore above. Your plan saves automatically on this device.</p>
+      <div class="eyebrow" data-i18n="planEyebrow">Your call</div>
+      <h2 data-i18n="planHeading">Build your trip</h2>
+      <p data-i18n="planDesc">Set how many days you've got, then assign places from Explore above. Your plan saves automatically on this device.</p>
     </div>
     <div class="planner-bar reveal">
       <div class="field">
-        <label for="dayCountInput">Trip length</label>
+        <label for="dayCountInput" data-i18n="tripLength">Trip length</label>
         <input type="number" id="dayCountInput" min="3" max="10" value="7" aria-describedby="dayCountUnit"/>
-        <span id="dayCountUnit" class="mono" style="font-size:0.8rem;color:var(--muted);">days</span>
+        <span id="dayCountUnit" class="mono" data-i18n="daysUnit" style="font-size:0.8rem;color:var(--muted);">days</span>
       </div>
       <div class="spacer"></div>
       <div class="planner-total mono" id="plannerTotal">Estimated budget: <b>$0</b></div>
-      <button class="ghost-btn" type="button" id="copyBtn">Copy plan</button>
-      <button class="ghost-btn" type="button" id="clearBtn">Clear plan</button>
+      <button class="ghost-btn" type="button" id="copyBtn" data-i18n="copyPlan">Copy plan</button>
+      <button class="ghost-btn" type="button" id="clearBtn" data-i18n="clearPlan">Clear plan</button>
       <span id="copyStatus" class="mono" aria-live="polite"></span>
     </div>
     <div class="planner-days" id="plannerDays"></div>
@@ -584,32 +596,32 @@
 
   <section class="section" id="before-you-go">
     <div class="section-head">
-      <div class="eyebrow">Before you go</div>
-      <h2>The practical stuff</h2>
+      <div class="eyebrow" data-i18n="bygEyebrow">Before you go</div>
+      <h2 data-i18n="bygHeading">The practical stuff</h2>
     </div>
     <div class="info-strip">
       <div class="info-cell reveal">
-        <div class="eyebrow">Best time</div>
-        <p>Late November is a genuinely great call: crisp, dry, jacket weather, red maples at their peak, and none of the spring cherry-blossom crowds. (Summer, by contrast, is brutally hot and humid &mdash; hard pass.)</p>
+        <div class="eyebrow" data-i18n="info1Title">Best time</div>
+        <p data-i18n="info1Body">Late November is a genuinely great call: crisp, dry, jacket weather, red maples at their peak, and none of the spring cherry-blossom crowds. (Summer, by contrast, is brutally hot and humid &mdash; hard pass.)</p>
       </div>
       <div class="info-cell reveal">
-        <div class="eyebrow">Getting there</div>
-        <p>Direct and connecting flights into Wuhan Tianhe Airport, or a ~4&ndash;5 hour bullet train from Beijing, Shanghai, or Guangzhou.</p>
+        <div class="eyebrow" data-i18n="info2Title">Getting there</div>
+        <p data-i18n="info2Body">Direct and connecting flights into Wuhan Tianhe Airport, or a ~4&ndash;5 hour bullet train from Beijing, Shanghai, or Guangzhou.</p>
       </div>
       <div class="info-cell reveal">
-        <div class="eyebrow">Budget</div>
-        <p>Street food meals run $1&ndash;3. Overall, Wuhan is noticeably cheaper than Beijing, Shanghai, or Shenzhen &mdash; use the planner above for a real per-trip estimate.</p>
+        <div class="eyebrow" data-i18n="info3Title">Budget</div>
+        <p data-i18n="info3Body">Street food meals run $1&ndash;3. Overall, Wuhan is noticeably cheaper than Beijing, Shanghai, or Shenzhen &mdash; use the planner above for a real per-trip estimate.</p>
       </div>
       <div class="info-cell reveal">
-        <div class="eyebrow">One rule</div>
-        <p>Most places are app-pay only (Alipay/WeChat Pay) &mdash; set one up before you land, and keep your passport on you for hotel check-ins and museum reservations.</p>
+        <div class="eyebrow" data-i18n="info4Title">One rule</div>
+        <p data-i18n="info4Body">Most places are app-pay only (Alipay/WeChat Pay) &mdash; set one up before you land, and keep your passport on you for hotel check-ins and museum reservations.</p>
       </div>
     </div>
   </section>
 
   <footer>
-    <p>Wuhan doesn't do subtle. Neither should your itinerary.</p>
-    <p style="font-family:'JetBrains Mono', monospace; font-weight:400; font-size:0.72rem; background:none; -webkit-text-fill-color:var(--muted); color:var(--muted); margin-top:10px;">Place photography via Wikimedia Commons contributors, CC BY / CC BY-SA — hover any photo for credit.</p>
+    <p data-i18n="footerTagline">Wuhan doesn't do subtle. Neither should your itinerary.</p>
+    <p data-i18n="footerCredit" style="font-family:'JetBrains Mono', monospace; font-weight:400; font-size:0.72rem; background:none; -webkit-text-fill-color:var(--muted); color:var(--muted); margin-top:10px;">Place photography via Wikimedia Commons contributors, CC BY / CC BY-SA — hover any photo for credit.</p>
   </footer>
 
 </div>
@@ -619,11 +631,112 @@
   "use strict";
 
   var CATS = {
-    iconic:    { label: "Iconic Sight", varName: "--cat-iconic" },
-    culture:   { label: "Culture",      varName: "--cat-culture" },
-    outdoors:  { label: "Outdoors",     varName: "--cat-outdoors" },
-    food:      { label: "Food",         varName: "--cat-food" },
-    nightlife: { label: "Nightlife",    varName: "--cat-nightlife" }
+    iconic:    { label: { en:"Iconic Sight", zh:"地标景点" }, varName: "--cat-iconic" },
+    culture:   { label: { en:"Culture",      zh:"文化" },     varName: "--cat-culture" },
+    outdoors:  { label: { en:"Outdoors",     zh:"户外" },     varName: "--cat-outdoors" },
+    food:      { label: { en:"Food",         zh:"美食" },     varName: "--cat-food" },
+    nightlife: { label: { en:"Nightlife",    zh:"夜生活" },   varName: "--cat-nightlife" }
+  };
+
+  var I18N = {
+    en: {
+      navMap:"Map", navExplore:"Explore", navPlan:"Plan", navBefore:"Before you go",
+      heroEyebrow:"CENTRAL CHINA · HUBEI PROVINCE",
+      heroTitle:"WUHAN",
+      heroTagline:"isn't on your radar yet. It should be.",
+      heroLede:"Two rivers crash into each other here, 1.3 million college students take over the streets every night, and breakfast is a bowl of noodles engineered to be eaten in under four minutes. This is the case for spending Thanksgiving break in the city that taught China how to build a bridge across the Yangtze — and never really slowed down since.",
+      stat1:"<b>1957</b> — first bridge ever built over the Yangtze",
+      stat2:"<b>83</b> universities, one city",
+      stat3:"<b>2,400+ yrs</b> old bells that still play in tune",
+      stat4:"red maple season: <b>November</b>",
+      heroCta:"Start building your trip ↓",
+      geoEyebrow:"Get your bearings",
+      geoHeading:"Three cities, stitched together by bridges",
+      geoDesc:"Wuhan isn't really one city — it's Wuchang, Hankou, and Hanyang, three separate towns split apart by the Yangtze and Han rivers and welded back together by bridges (starting with the one that finally connected them in 1957). Here's the rough layout, not to scale — every pin links to the real map below.",
+      mapHankou:"HANKOU", mapHanyang:"HANYANG", mapWuchang:"WUCHANG",
+      mapYangtze:"YANGTZE RIVER", mapHan:"HAN RIVER", mapEastLake:"EAST LAKE", mapBridge:"BRIDGE",
+      pinJianghan:"Jianghan Road", pinSkyDeck:"Wuhan Center Deck", pinGuiyuan:"Guiyuan Temple",
+      pinYcTower:"Yellow Crane Tower", pinHubu:"Hubu Alley", pinMuseum:"Hubei Museum",
+      pinEastLakeArea:"East Lake activities", pinGaming:"Optics Valley Gaming", pinCruise:"Night Cruise",
+      mapCaption:'Tap "Map" on any place card below to open the real, accurate map.',
+      mapAriaLabel:"Stylized map of Wuhan's three districts: Hankou, Hanyang, and Wuchang, divided by the Yangtze and Han rivers",
+      exploreEyebrow:"Everything on the table",
+      exploreHeading:"Explore Wuhan",
+      exploreDesc:"13 places across food, culture, outdoors, nightlife, and the iconic stuff. Each one has a budget estimate, a real map link, a way to learn more, and a way to book. Tap a day number on any card to drop it into your plan below.",
+      filterAll:"All",
+      linkLearnMore:"Learn more", linkMap:"Map", linkTickets:"Tickets", linkReserve:"Reserve", linkNoTicket:"No ticket needed",
+      addToDay:"Add to day",
+      planEyebrow:"Your call", planHeading:"Build your trip",
+      planDesc:"Set how many days you've got, then assign places from Explore above. Your plan saves automatically on this device.",
+      tripLength:"Trip length", daysUnit:"days",
+      estimatedBudget:"Estimated budget: ",
+      copyPlan:"Copy plan", clearPlan:"Clear plan",
+      copied:"Copied!", cantCopy:"Couldn't copy — select the plan manually.",
+      dayPrefix:"DAY", nothingPlanned:"Nothing planned yet.", subtotal:"Subtotal: $",
+      bygEyebrow:"Before you go", bygHeading:"The practical stuff",
+      info1Title:"Best time",
+      info1Body:"Late November is a genuinely great call: crisp, dry, jacket weather, red maples at their peak, and none of the spring cherry-blossom crowds. (Summer, by contrast, is brutally hot and humid — hard pass.)",
+      info2Title:"Getting there",
+      info2Body:"Direct and connecting flights into Wuhan Tianhe Airport, or a ~4–5 hour bullet train from Beijing, Shanghai, or Guangzhou.",
+      info3Title:"Budget",
+      info3Body:"Street food meals run $1–3. Overall, Wuhan is noticeably cheaper than Beijing, Shanghai, or Shenzhen — use the planner above for a real per-trip estimate.",
+      info4Title:"One rule",
+      info4Body:"Most places are app-pay only (Alipay/WeChat Pay) — set one up before you land, and keep your passport on you for hotel check-ins and museum reservations.",
+      footerTagline:"Wuhan doesn't do subtle. Neither should your itinerary.",
+      footerCredit:"Place photography via Wikimedia Commons contributors, CC BY / CC BY-SA — hover any photo for credit.",
+      planTitle:"My Wuhan Trip Plan", dayWord:"Day", nothingPlannedCopy:"(nothing planned)",
+      placeWord:" place · $", placesWord:" places · $",
+      snapAria:"Photo preview of Wuhan"
+    },
+    zh: {
+      navMap:"地图", navExplore:"探索", navPlan:"规划", navBefore:"行前须知",
+      heroEyebrow:"中国中部 · 湖北省",
+      heroTitle:"武汉",
+      heroTagline:"还没进入你的旅行清单？它应该在上面。",
+      heroLede:"两条大江在这里交汇，130 万大学生每晚把街道变成主场，早餐是一碗设计好要在四分钟内吃完的面。这就是为什么感恩节假期该来这座教会中国如何在长江上架桥的城市——而且从那以后就没慢下来过。",
+      stat1:"<b>1957</b> —— 长江上第一座桥建成通车",
+      stat2:"<b>83</b> 所大学，同一座城市",
+      stat3:"<b>2,400+ 年</b>前的编钟，至今音准不跑调",
+      stat4:"红叶季：<b>11 月</b>",
+      heroCta:"开始规划你的行程 ↓",
+      geoEyebrow:"先摸清方向",
+      geoHeading:"三座城，靠桥缝在一起",
+      geoDesc:"武汉其实不是一座城，而是武昌、汉口、汉阳三座曾经各自独立的城镇，被长江和汉江分开，又被一座座桥重新连在一起（第一座是 1957 年通车的那座）。下面是示意布局，比例不完全准确——每个标记点都能跳转到下方的真实地图。",
+      mapHankou:"汉口", mapHanyang:"汉阳", mapWuchang:"武昌",
+      mapYangtze:"长江", mapHan:"汉江", mapEastLake:"东湖", mapBridge:"大桥",
+      pinJianghan:"江汉路", pinSkyDeck:"武汉中心观景台", pinGuiyuan:"归元禅寺",
+      pinYcTower:"黄鹤楼", pinHubu:"户部巷", pinMuseum:"湖北省博物馆",
+      pinEastLakeArea:"东湖玩乐项目", pinGaming:"光谷电竞", pinCruise:"夜游长江",
+      mapCaption:'点下方卡片上的"地图"，跳转到真实精准的地图。',
+      mapAriaLabel:"武汉三镇示意地图：汉口、汉阳、武昌，被长江和汉江分隔",
+      exploreEyebrow:"全部安排摆上桌",
+      exploreHeading:"探索武汉",
+      exploreDesc:"13 个地点，涵盖美食、文化、户外、夜生活和地标景点。每一个都标了预算估算、真实地图链接、了解详情和预订方式。点卡片上的日期数字，就能把它加进下面的行程里。",
+      filterAll:"全部",
+      linkLearnMore:"了解详情", linkMap:"地图", linkTickets:"门票", linkReserve:"预约", linkNoTicket:"无需门票",
+      addToDay:"加入行程日",
+      planEyebrow:"你说了算", planHeading:"规划你的行程",
+      planDesc:"先定好你有几天时间，再从上面的探索区把地点加进来。你的行程会自动保存在这台设备上。",
+      tripLength:"行程天数", daysUnit:"天",
+      estimatedBudget:"预估预算：",
+      copyPlan:"复制行程", clearPlan:"清空行程",
+      copied:"已复制！", cantCopy:"复制失败，请手动选取文字复制。",
+      dayPrefix:"第", nothingPlanned:"还没有安排。", subtotal:"小计：$",
+      bygEyebrow:"出发前必读", bygHeading:"实用信息",
+      info1Title:"最佳时间",
+      info1Body:"十一月下旬是真的很不错的选择：干爽凉快，正是穿夹克的天气，红枫叶正当时，还没有春天樱花季的人山人海。（相比之下，夏天又闷又热——直接跳过。）",
+      info2Title:"怎么到达",
+      info2Body:"可以直飞或转机到武汉天河机场，也可以从北京、上海或广州坐高铁过来，大约 4～5 小时。",
+      info3Title:"预算",
+      info3Body:"街头小吃一顿大概 1～3 美元。整体上，武汉比北京、上海、深圳都便宜不少——具体预算可以用上面的行程规划器实时估算。",
+      info4Title:"一条铁律",
+      info4Body:"大部分地方只能用手机支付（支付宝/微信支付）——落地前先绑定好，去酒店入住和博物馆预约时也记得随身带护照。",
+      footerTagline:"武汉从不低调，你的行程也不该低调。",
+      footerCredit:"地点照片来自 Wikimedia Commons 贡献者，采用 CC BY / CC BY-SA 协议——鼠标悬停在照片上可查看署名。",
+      planTitle:"我的武汉行程", dayWord:"第", nothingPlannedCopy:"（还没有安排）",
+      placeWord:" 个地点 · $", placesWord:" 个地点 · $",
+      snapAria:"武汉照片预览"
+    }
   };
 
   var ICONS = {
@@ -647,87 +760,101 @@
   }
 
   var PLACES = [
-    { id:"ycTower", name:"Yellow Crane Tower", category:"iconic", icon:"tower",
+    { id:"ycTower", name:{en:"Yellow Crane Tower", zh:"黄鹤楼"}, category:"iconic", icon:"tower",
       img:"images/yctower.jpg", imgAlt:"Yellow Crane Tower's tiered gold-and-crimson pagoda rising above the trees",
       credit:"Photo: MonsieurRoi, CC BY-SA 3.0, via Wikimedia Commons",
-      blurb:"Rebuilt on the same hilltop since the 3rd century — still the best skyline-and-river view in the city, and the reason half of classical Chinese poetry exists.",
-      budget:10, budgetLabel:"~$10 entry", ticket:"paid", ticketQuery:"Yellow Crane Tower ticket",
+      blurb:{en:"Rebuilt on the same hilltop since the 3rd century — still the best skyline-and-river view in the city, and the reason half of classical Chinese poetry exists.",
+             zh:"自三世纪以来一直矗立在同一座山头上——依然是全城最好的天际线加江景视角，也是半部中国古典诗词的灵感来源。"},
+      budget:10, budgetLabel:{en:"~$10 entry", zh:"约 $10 门票"}, ticket:"paid", ticketQuery:"Yellow Crane Tower ticket",
       mapQuery:"Yellow Crane Tower, Wuhan, China", wikiQuery:"Yellow Crane Tower" },
-    { id:"bridge", name:"First Yangtze River Bridge", category:"iconic", icon:"bridge",
+    { id:"bridge", name:{en:"First Yangtze River Bridge", zh:"长江大桥（第一座）"}, category:"iconic", icon:"bridge",
       img:"images/bridge.jpg", imgAlt:"The double-deck First Yangtze River Bridge spanning the water",
       credit:"Photo: via Wikimedia Commons, CC BY-SA 3.0",
-      blurb:"The very first bridge ever built across the Yangtze, opened in 1957. Free to walk across, free to post about.",
-      budget:0, budgetLabel:"Free", ticket:"free",
+      blurb:{en:"The very first bridge ever built across the Yangtze, opened in 1957. Free to walk across, free to post about.",
+             zh:"长江上第一座建成的桥梁，1957 年通车。免费走上去，免费发朋友圈。"},
+      budget:0, budgetLabel:{en:"Free", zh:"免费"}, ticket:"free",
       mapQuery:"Wuhan Yangtze River Bridge", wikiQuery:"Wuhan Yangtze River Bridge" },
-    { id:"skyDeck", name:"Wuhan Center Skyline Deck", category:"iconic", icon:"skyline",
+    { id:"skyDeck", name:{en:"Wuhan Center Skyline Deck", zh:"武汉中心观景台"}, category:"iconic", icon:"skyline",
       img:"images/skydeck.jpg", imgAlt:"Wuhan's high-rise skyline along the riverfront",
       credit:"Photo: Majorantarktis, CC BY-SA 4.0, via Wikimedia Commons",
-      blurb:"An observation deck with both rivers and every bridge in the city laid out below you after dark.",
-      budget:17, budgetLabel:"~$17 entry", ticket:"paid", ticketQuery:"Wuhan Center observation deck ticket",
+      blurb:{en:"An observation deck with both rivers and every bridge in the city laid out below you after dark.",
+             zh:"一座观景台，能把两条江和全城的桥都收进眼底，夜幕降临后尤其震撼。"},
+      budget:17, budgetLabel:{en:"~$17 entry", zh:"约 $17 门票"}, ticket:"paid", ticketQuery:"Wuhan Center observation deck ticket",
       mapQuery:"Wuhan Center, Wuhan, China", wikiQuery:"Wuhan Center" },
-    { id:"museum", name:"Hubei Provincial Museum", category:"culture", icon:"bell",
+    { id:"museum", name:{en:"Hubei Provincial Museum", zh:"湖北省博物馆"}, category:"culture", icon:"bell",
       img:"images/museum.jpg", imgAlt:"The 2,400-year-old bianzhong bronze bell set on display at the Hubei Provincial Museum",
       credit:"Photo: Vmenkov, CC BY-SA 3.0, via Wikimedia Commons",
-      blurb:"Home to a 2,400-year-old set of bronze bells pulled from a Warring States-era tomb — still in tune, still playable.",
-      budget:0, budgetLabel:"Free (reserve ahead)", ticket:"reservation", ticketQuery:"Hubei Provincial Museum reservation",
+      blurb:{en:"Home to a 2,400-year-old set of bronze bells pulled from a Warring States-era tomb — still in tune, still playable.",
+             zh:"馆藏一套 2400 年前的青铜编钟，出土于战国时期的古墓——至今音准依旧，还能演奏。"},
+      budget:0, budgetLabel:{en:"Free (reserve ahead)", zh:"免费（需预约）"}, ticket:"reservation", ticketQuery:"Hubei Provincial Museum reservation",
       mapQuery:"Hubei Provincial Museum, Wuhan, China", wikiQuery:"Hubei Provincial Museum" },
-    { id:"guiyuan", name:"Guiyuan Temple", category:"culture", icon:"temple",
+    { id:"guiyuan", name:{en:"Guiyuan Temple", zh:"归元禅寺"}, category:"culture", icon:"temple",
       img:"images/guiyuan.jpg", imgAlt:"Guiyuan Temple's traditional courtyard buildings in Hanyang",
       credit:"Photo: Gisling, CC BY 3.0, via Wikimedia Commons",
-      blurb:"Five hundred gold-leafed arhat statues and a break from the noise, tucked into the Hanyang side of the city.",
-      budget:3, budgetLabel:"~$3 entry", ticket:"paid", ticketQuery:"Guiyuan Temple Wuhan ticket",
+      blurb:{en:"Five hundred gold-leafed arhat statues and a break from the noise, tucked into the Hanyang side of the city.",
+             zh:"五百尊贴金罗汉像，在汉阳这一侧给你一个远离喧嚣的地方。"},
+      budget:3, budgetLabel:{en:"~$3 entry", zh:"约 $3 门票"}, ticket:"paid", ticketQuery:"Guiyuan Temple Wuhan ticket",
       mapQuery:"Guiyuan Temple, Wuhan, China", wikiQuery:"Guiyuan Temple" },
-    { id:"wuhanU", name:"Wuhan University", category:"culture", icon:"university",
+    { id:"wuhanU", name:{en:"Wuhan University", zh:"武汉大学"}, category:"culture", icon:"university",
       img:"images/wuhanu.jpg", imgAlt:"A campus building on Wuhan University's east campus",
       credit:"Photo: Geographyinitiative, CC BY-SA 4.0, via Wikimedia Commons",
-      blurb:"Century-old campus architecture that trades the famous spring cherry blossoms for equally photogenic November maples.",
-      budget:0, budgetLabel:"Free", ticket:"free",
+      blurb:{en:"Century-old campus architecture that trades the famous spring cherry blossoms for equally photogenic November maples.",
+             zh:"百年校园建筑，用同样上镜的十一月红枫，换掉了那个著名的春季樱花季。"},
+      budget:0, budgetLabel:{en:"Free", zh:"免费"}, ticket:"free",
       mapQuery:"Wuhan University", wikiQuery:"Wuhan University" },
-    { id:"hanfu", name:"Hanfu Photoshoot", category:"culture", icon:"robe",
+    { id:"hanfu", name:{en:"Hanfu Photoshoot", zh:"汉服体验"}, category:"culture", icon:"robe",
       img:"images/hanfu.jpg", imgAlt:"A group of students in traditional hanfu dress picnicking on a lawn in front of the skyline",
       credit:"Photo: Allervous, CC BY-SA 4.0, via Wikimedia Commons",
-      blurb:"Rent traditional dress at a studio near East Lake and become the main character for an afternoon. Everyone does it, nobody's embarrassed.",
-      budget:30, budgetLabel:"$20–$40 rental", ticket:"paid", ticketQuery:"hanfu rental East Lake Wuhan",
+      blurb:{en:"Rent traditional dress at a studio near East Lake and become the main character for an afternoon. Everyone does it, nobody's embarrassed.",
+             zh:"在东湖附近的门店租一套传统服饰，当一整个下午的主角。人人都这么干，没人会觉得尴尬。"},
+      budget:30, budgetLabel:{en:"$20–$40 rental", zh:"$20–$40 租赁"}, ticket:"paid", ticketQuery:"hanfu rental East Lake Wuhan",
       mapQuery:"East Lake, Wuhan, China", wikiQuery:"Hanfu" },
-    { id:"greenway", name:"East Lake Greenway", category:"outdoors", icon:"bike",
+    { id:"greenway", name:{en:"East Lake Greenway", zh:"东湖绿道"}, category:"outdoors", icon:"bike",
       img:"images/greenway.jpg", imgAlt:"The wooded shoreline of East Lake along the Greenway path",
       credit:"Photo: Fxqf, CC BY-SA 4.0, via Wikimedia Commons",
-      blurb:"About 100km of lakeside bike path — one of the longest urban greenway loops in China. Rent a bike and just keep going.",
-      budget:6, budgetLabel:"~$6 bike rental", ticket:"paid", ticketQuery:"East Lake Greenway bike rental Wuhan",
+      blurb:{en:"About 100km of lakeside bike path — one of the longest urban greenway loops in China. Rent a bike and just keep going.",
+             zh:"大约 100 公里的环湖骑行道——中国最长的城市绿道环线之一。租辆车，骑到你想停下来为止。"},
+      budget:6, budgetLabel:{en:"~$6 bike rental", zh:"约 $6 租车"}, ticket:"paid", ticketQuery:"East Lake Greenway bike rental Wuhan",
       mapQuery:"East Lake Greenway, Wuhan, China", wikiQuery:"East Lake (Wuhan)" },
-    { id:"moshan", name:"Moshan Red Maple Forest", category:"outdoors", icon:"leaf",
+    { id:"moshan", name:{en:"Moshan Red Maple Forest", zh:"磨山红枫"}, category:"outdoors", icon:"leaf",
       img:"images/moshan.jpg", imgAlt:"Moshan Hill's wooded scenic area beside East Lake",
       credit:"Photo: gugganij, CC BY-SA 3.0, via Wikimedia Commons",
-      blurb:"The reason to visit East Lake in November instead of March — a hillside that turns solid red and gold for a few weeks a year.",
-      budget:6, budgetLabel:"~$6 entry", ticket:"paid", ticketQuery:"Moshan Scenic Area ticket East Lake Wuhan",
+      blurb:{en:"The reason to visit East Lake in November instead of March — a hillside that turns solid red and gold for a few weeks a year.",
+             zh:"十一月而不是三月来东湖的理由——一整片山坡会变成成片的红与金，一年也就美这么几周。"},
+      budget:6, budgetLabel:{en:"~$6 entry", zh:"约 $6 门票"}, ticket:"paid", ticketQuery:"Moshan Scenic Area ticket East Lake Wuhan",
       mapQuery:"Moshan Scenic Area, East Lake, Wuhan", wikiQuery:"East Lake (Wuhan)" },
-    { id:"cruise", name:"Yangtze Night Cruise", category:"nightlife", icon:"boat",
+    { id:"cruise", name:{en:"Yangtze Night Cruise", zh:"长江夜游"}, category:"nightlife", icon:"boat",
       img:"images/cruise.jpg", imgAlt:"Wuhan's riverfront skyline seen from the water",
       credit:"Photo: AndrewHorne, CC BY-SA 3.0, via Wikimedia Commons",
-      blurb:"Both bridges lit up, the skyline on either bank, and a cold drink in hand while the boat does the work.",
-      budget:25, budgetLabel:"~$25 ticket", ticket:"paid", ticketQuery:"Yangtze River night cruise Wuhan ticket",
+      blurb:{en:"Both bridges lit up, the skyline on either bank, and a cold drink in hand while the boat does the work.",
+             zh:"两座大桥灯火通明，两岸天际线尽收眼底，手里一杯冷饮，剩下的交给船就行。"},
+      budget:25, budgetLabel:{en:"~$25 ticket", zh:"约 $25 船票"}, ticket:"paid", ticketQuery:"Yangtze River night cruise Wuhan ticket",
       mapQuery:"Yangtze River cruise dock, Wuhan, China", wikiQuery:"Yangtze" },
-    { id:"hubu", name:"Hubu Alley", category:"food", icon:"noodles",
+    { id:"hubu", name:{en:"Hubu Alley", zh:"户部巷"}, category:"food", icon:"noodles",
       img:"images/hubu.jpg", imgAlt:"Red lanterns hanging over the food stalls of Hubu Alley",
       credit:"Photo: Howchou, CC BY-SA 3.0, via Wikimedia Commons",
-      blurb:"One street, a hundred stalls: duck neck, doupi, skewers, and Wuhan's signature hot-dry noodles, reganmian.",
-      budget:10, budgetLabel:"~$10 for a night of grazing", ticket:"free",
+      blurb:{en:"One street, a hundred stalls: duck neck, doupi, skewers, and Wuhan's signature hot-dry noodles, reganmian.",
+             zh:"一条街，上百个摊位：鸭脖、豆皮、烤串，还有武汉的招牌热干面。"},
+      budget:10, budgetLabel:{en:"~$10 for a night of grazing", zh:"约 $10 吃一整晚"}, ticket:"free",
       mapQuery:"Hubu Alley, Wuhan, China", wikiQuery:"Hubu Alley" },
-    { id:"gaming", name:"Optics Valley Gaming", category:"nightlife", icon:"controller",
+    { id:"gaming", name:{en:"Optics Valley Gaming", zh:"光谷电竞"}, category:"nightlife", icon:"controller",
       img:"images/gaming.jpg", imgAlt:"The plaza at Optics Valley Square in Wuhan's tech district",
       credit:"Photo: Zhangmoon618, CC BY-SA 3.0, via Wikimedia Commons",
-      blurb:"Arcades and gaming lounges in Wuhan's tech district — and if the schedule lines up, a live League of Legends Pro League match.",
-      budget:15, budgetLabel:"~$15 a session", ticket:"paid", ticketQuery:"gaming lounge Optics Valley Wuhan",
+      blurb:{en:"Arcades and gaming lounges in Wuhan's tech district — and if the schedule lines up, a live League of Legends Pro League match.",
+             zh:"武汉科技园区里的电玩厅和电竞馆——如果时间凑巧，还能现场看一场英雄联盟职业联赛（LPL）比赛。"},
+      budget:15, budgetLabel:{en:"~$15 a session", zh:"约 $15 一场"}, ticket:"paid", ticketQuery:"gaming lounge Optics Valley Wuhan",
       mapQuery:"Optics Valley, Wuhan, China", wikiQuery:"Wuhan East Lake High-Tech Development Zone" },
-    { id:"jianghan", name:"Jianghan Road", category:"food", icon:"storefront",
+    { id:"jianghan", name:{en:"Jianghan Road", zh:"江汉路"}, category:"food", icon:"storefront",
       img:"images/jianghan.jpg", imgAlt:"The 1920s European-style buildings lining Jianghan Road",
       credit:"Photo: Vmenkov, CC BY-SA 3.0, via Wikimedia Commons",
-      blurb:"A pedestrian strip of 1920s European-style buildings on the Hankou side, now full of shops, cafes, and street snacks.",
-      budget:12, budgetLabel:"~$12 shopping + snacks", ticket:"free",
+      blurb:{en:"A pedestrian strip of 1920s European-style buildings on the Hankou side, now full of shops, cafes, and street snacks.",
+             zh:"汉口这一侧一整条 1920 年代欧式建筑的步行街，现在开满了商店、咖啡馆和街头小吃。"},
+      budget:12, budgetLabel:{en:"~$12 shopping + snacks", zh:"约 $12 购物+小吃"}, ticket:"free",
       mapQuery:"Jianghan Road, Wuhan, China", wikiQuery:"Jianghan Road" }
   ];
 
   var currentFilter = "all";
+  var currentLang = "en";
   var state = { days: 7, assign: {} };
 
   function loadState(){
@@ -740,11 +867,47 @@
           if (parsed.assign) state.assign = parsed.assign;
         }
       }
+      var lang = localStorage.getItem("wuhanTripLang_v1");
+      if (lang === "en" || lang === "zh") currentLang = lang;
     }catch(e){}
   }
   function saveState(){
     try{ localStorage.setItem("wuhanTripPlan_v1", JSON.stringify(state)); }catch(e){}
   }
+  function saveLang(){
+    try{ localStorage.setItem("wuhanTripLang_v1", currentLang); }catch(e){}
+  }
+
+  function t(key){ return (I18N[currentLang] && I18N[currentLang][key] !== undefined) ? I18N[currentLang][key] : I18N.en[key]; }
+
+  function applyI18n(){
+    document.documentElement.lang = (currentLang === "zh") ? "zh-CN" : "en";
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(function(el){
+      el.innerHTML = t(el.getAttribute("data-i18n-html"));
+    });
+    var mapSvg = document.getElementById("mapSvg");
+    if (mapSvg) mapSvg.setAttribute("aria-label", t("mapAriaLabel"));
+    var snapStrip = document.getElementById("snapStrip");
+    if (snapStrip) snapStrip.setAttribute("aria-label", t("snapAria"));
+    document.querySelectorAll(".lang-btn").forEach(function(btn){
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-lang") === currentLang ? "true" : "false");
+    });
+  }
+
+  document.querySelectorAll(".lang-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      currentLang = btn.getAttribute("data-lang");
+      saveLang();
+      applyI18n();
+      renderTabs();
+      renderSnapshots();
+      renderExplore();
+      renderPlanner();
+    });
+  });
 
   function mapsUrl(q){ return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); }
   function wikiUrl(q){ return "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(q) + "&go=Go"; }
@@ -776,7 +939,7 @@
     var from = lastTotal;
     lastTotal = to;
     if (reduced || from === to){
-      el.innerHTML = "Estimated budget: <b>$" + to + "</b>";
+      el.innerHTML = t("estimatedBudget") + "<b>$" + to + "</b>";
       return;
     }
     var start = null, duration = 450;
@@ -785,7 +948,7 @@
       var progress = Math.min((ts - start) / duration, 1);
       var eased = 1 - Math.pow(1 - progress, 3);
       var val = Math.round(from + (to - from) * eased);
-      el.innerHTML = "Estimated budget: <b>$" + val + "</b>";
+      el.innerHTML = t("estimatedBudget") + "<b>$" + val + "</b>";
       if (progress < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
@@ -795,7 +958,7 @@
     var el = document.getElementById("snapStrip");
     if (!el) return;
     el.innerHTML = PLACES.map(function(p){
-      return '<div class="snap-tile"><img src="' + p.img + '" alt="' + p.imgAlt + '" title="' + p.credit + '" loading="lazy"><span>' + p.name + '</span></div>';
+      return '<div class="snap-tile"><img src="' + p.img + '" alt="' + p.imgAlt + '" title="' + p.credit + '" loading="lazy"><span>' + p.name[currentLang] + '</span></div>';
     }).join("");
   }
 
@@ -804,13 +967,13 @@
     var total = 0;
     PLACES.forEach(function(p){ if (state.assign[p.id] !== undefined) total += p.budget; });
     var el = document.getElementById("navStatus");
-    if (el) el.textContent = count + (count === 1 ? " place · $" : " places · $") + total;
+    if (el) el.textContent = count + (count === 1 ? t("placeWord") : t("placesWord")) + total;
   }
 
   function renderTabs(){
     var el = document.getElementById("filterTabs");
-    var tabs = [{ key:"all", label:"All" }];
-    Object.keys(CATS).forEach(function(k){ tabs.push({ key:k, label: CATS[k].label }); });
+    var tabs = [{ key:"all", label:t("filterAll") }];
+    Object.keys(CATS).forEach(function(k){ tabs.push({ key:k, label: CATS[k].label[currentLang] }); });
     el.innerHTML = tabs.map(function(t){
       return '<button type="button" class="filter-tab" data-filter="' + t.key + '" aria-pressed="' + (t.key === currentFilter ? "true" : "false") + '">' + t.label + '</button>';
     }).join("");
@@ -828,16 +991,20 @@
     var list = PLACES.filter(function(p){ return currentFilter === "all" || p.category === currentFilter; });
     el.innerHTML = list.map(function(p){
       var cat = CATS[p.category];
+      var name = p.name[currentLang];
       var dayChips = "";
       for (var d = 1; d <= state.days; d++){
         var pressed = state.assign[p.id] === d;
-        dayChips += '<button type="button" class="day-chip" style="--cc:var(' + cat.varName + ')" data-place="' + p.id + '" data-day="' + d + '" aria-pressed="' + (pressed ? "true" : "false") + '" aria-label="' + (pressed ? "Remove " + p.name + " from Day " + d : "Add " + p.name + " to Day " + d) + '">' + d + '</button>';
+        var ariaLabel = currentLang === "zh"
+          ? (pressed ? "从第 " + d + " 天移除 " + name : "把 " + name + " 加入第 " + d + " 天")
+          : (pressed ? "Remove " + name + " from Day " + d : "Add " + name + " to Day " + d);
+        dayChips += '<button type="button" class="day-chip" style="--cc:var(' + cat.varName + ')" data-place="' + p.id + '" data-day="' + d + '" aria-pressed="' + (pressed ? "true" : "false") + '" aria-label="' + ariaLabel + '">' + d + '</button>';
       }
       var ticketHtml;
       if (p.ticket === "free"){
-        ticketHtml = '<span class="no-ticket">No ticket needed</span>';
+        ticketHtml = '<span class="no-ticket">' + t("linkNoTicket") + '</span>';
       } else {
-        var label = p.ticket === "reservation" ? "Reserve" : "Tickets";
+        var label = p.ticket === "reservation" ? t("linkReserve") : t("linkTickets");
         ticketHtml = '<a href="' + ticketUrl(p.ticketQuery) + '" target="_blank" rel="noopener">' + label + '</a>';
       }
       return '' +
@@ -845,19 +1012,19 @@
           '<div class="card-photo">' +
             '<img src="' + p.img + '" alt="' + p.imgAlt + '" title="' + p.credit + '" loading="lazy">' +
             '<div class="card-icon" style="color:var(' + cat.varName + ')">' + icon(p.icon) + '</div>' +
-            '<span class="budget-chip mono">' + p.budgetLabel + '</span>' +
+            '<span class="budget-chip mono">' + p.budgetLabel[currentLang] + '</span>' +
           '</div>' +
           '<div class="card-body">' +
-            '<div class="card-tag" style="color:var(' + cat.varName + ')">' + cat.label + '</div>' +
-            '<h3>' + p.name + '</h3>' +
-            '<p class="blurb">' + p.blurb + '</p>' +
+            '<div class="card-tag" style="color:var(' + cat.varName + ')">' + cat.label[currentLang] + '</div>' +
+            '<h3>' + name + '</h3>' +
+            '<p class="blurb">' + p.blurb[currentLang] + '</p>' +
             '<div class="card-links">' +
-              '<a href="' + wikiUrl(p.wikiQuery) + '" target="_blank" rel="noopener">Learn more</a>' +
-              '<a href="' + mapsUrl(p.mapQuery) + '" target="_blank" rel="noopener">Map</a>' +
+              '<a href="' + wikiUrl(p.wikiQuery) + '" target="_blank" rel="noopener">' + t("linkLearnMore") + '</a>' +
+              '<a href="' + mapsUrl(p.mapQuery) + '" target="_blank" rel="noopener">' + t("linkMap") + '</a>' +
               ticketHtml +
             '</div>' +
             '<div class="day-picker">' +
-              '<span class="pp-label">Add to day</span>' +
+              '<span class="pp-label">' + t("addToDay") + '</span>' +
               '<div class="day-chips">' + dayChips + '</div>' +
             '</div>' +
           '</div>' +
@@ -895,19 +1062,24 @@
     var grandTotal = 0;
 
     var cycle = ["--cat-iconic", "--cat-food", "--cat-nightlife", "--cat-outdoors", "--cat-culture"];
+    var dayHeading = function(d){
+      return currentLang === "zh" ? (t("dayPrefix") + " " + d + " 天") : (t("dayPrefix") + " " + (d < 10 ? "0" + d : d));
+    };
     for (var d = 1; d <= state.days; d++){
       var items = PLACES.filter(function(p){ return state.assign[p.id] === d; });
       var subtotal = items.reduce(function(sum, p){ return sum + p.budget; }, 0);
       grandTotal += subtotal;
-      html += '<div class="planner-day reveal" style="--cc:var(' + cycle[(d - 1) % cycle.length] + ')"><h4>DAY ' + (d < 10 ? "0" + d : d) + '</h4><ul>';
+      html += '<div class="planner-day reveal" style="--cc:var(' + cycle[(d - 1) % cycle.length] + ')"><h4>' + dayHeading(d) + '</h4><ul>';
       if (items.length === 0){
-        html += '<li class="planner-empty" style="background:none;padding:0;">Nothing planned yet.</li>';
+        html += '<li class="planner-empty" style="background:none;padding:0;">' + t("nothingPlanned") + '</li>';
       } else {
         items.forEach(function(p){
-          html += '<li><span>' + p.name + '</span><button type="button" data-remove="' + p.id + '" aria-label="Remove ' + p.name + ' from this day">×</button></li>';
+          var name = p.name[currentLang];
+          var removeLabel = currentLang === "zh" ? ("从这一天移除 " + name) : ("Remove " + name + " from this day");
+          html += '<li><span>' + name + '</span><button type="button" data-remove="' + p.id + '" aria-label="' + removeLabel + '">×</button></li>';
         });
       }
-      html += '</ul><div class="subtotal">Subtotal: $' + subtotal + '</div></div>';
+      html += '</ul><div class="subtotal">' + t("subtotal") + subtotal + '</div></div>';
     }
     daysEl.innerHTML = html;
     animateBudget(grandTotal);
@@ -946,29 +1118,31 @@
   });
 
   document.getElementById("copyBtn").addEventListener("click", function(){
-    var lines = ["My Wuhan Trip Plan"];
+    var lines = [t("planTitle")];
     var total = 0;
     for (var d = 1; d <= state.days; d++){
       var items = PLACES.filter(function(p){ return state.assign[p.id] === d; });
-      lines.push("Day " + d + ": " + (items.length ? items.map(function(p){ total += p.budget; return p.name; }).join(", ") : "(nothing planned)"));
+      var dayLine = currentLang === "zh" ? (t("dayWord") + " " + d + " 天") : (t("dayWord") + " " + d);
+      lines.push(dayLine + ": " + (items.length ? items.map(function(p){ total += p.budget; return p.name[currentLang]; }).join(currentLang === "zh" ? "、" : ", ") : t("nothingPlannedCopy")));
     }
-    lines.push("Estimated budget: $" + total);
+    lines.push(t("estimatedBudget") + "$" + total);
     var text = lines.join("\n");
     var statusEl = document.getElementById("copyStatus");
     try{
       navigator.clipboard.writeText(text).then(function(){
-        statusEl.textContent = "Copied!";
+        statusEl.textContent = t("copied");
         setTimeout(function(){ statusEl.textContent = ""; }, 2000);
       }).catch(function(){
-        statusEl.textContent = "Couldn't copy — select the plan manually.";
+        statusEl.textContent = t("cantCopy");
       });
     }catch(e){
-      statusEl.textContent = "Couldn't copy — select the plan manually.";
+      statusEl.textContent = t("cantCopy");
     }
   });
 
   loadState();
   document.getElementById("dayCountInput").value = state.days;
+  applyI18n();
   renderTabs();
   renderSnapshots();
   renderExplore();
