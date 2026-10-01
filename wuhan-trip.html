@@ -86,6 +86,76 @@
   }
   .lang-btn[aria-pressed="true"]{ background:var(--accent-pink); color:#0A0F12; font-weight:700; }
 
+  .auth-area{ display:flex; align-items:center; gap:10px; flex:none; }
+  .auth-signin-btn{
+    background:linear-gradient(120deg, var(--accent-pink), var(--accent-orange));
+    color:#0A0F12; border:none; padding:7px 15px; border-radius:100px; cursor:pointer;
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; font-weight:700; letter-spacing:0.03em;
+  }
+  .auth-identity{ display:flex; align-items:center; gap:8px; }
+  .auth-email{
+    max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    font-size:0.72rem; color:var(--ink); background:var(--surface-2); padding:5px 10px; border-radius:100px;
+  }
+  .auth-signout-btn{
+    background:none; border:1px solid var(--line); color:var(--muted); cursor:pointer;
+    padding:5px 10px; border-radius:100px; font-family:'JetBrains Mono', monospace; font-size:0.68rem;
+  }
+  .auth-signout-btn:hover{ border-color:var(--accent-pink); color:var(--accent-pink); }
+  @media (max-width:380px){ .auth-email{ max-width:84px; } }
+
+  /* ---------- AUTH MODAL ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0; z-index:200;
+    background:rgba(4,7,10,0.72); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-backdrop[hidden]{ display:none; }
+  .auth-modal{
+    position:relative; width:100%; max-width:380px;
+    background:linear-gradient(165deg, var(--surface) 0%, var(--bg) 140%);
+    border:1px solid var(--line); border-radius:22px;
+    padding:30px 26px 26px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.6);
+  }
+  .modal-close{
+    position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%;
+    background:var(--surface-2); border:none; color:var(--muted); cursor:pointer; font-size:1.1rem; line-height:1;
+  }
+  .modal-close:hover{ color:var(--ink); }
+  .auth-tabs{ display:flex; gap:6px; background:var(--surface-2); border-radius:100px; padding:4px; margin-bottom:20px; }
+  .auth-tab{
+    flex:1; background:none; border:none; cursor:pointer; padding:8px 10px; border-radius:100px;
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.02em; color:var(--muted);
+  }
+  .auth-tab[aria-pressed="true"]{ background:var(--accent-pink); color:#0A0F12; font-weight:700; }
+  .auth-modal h3{ font-size:1.3rem; }
+  .auth-sub{ color:var(--muted); font-size:0.86rem; margin-top:8px; line-height:1.5; }
+  #authForm{ display:flex; flex-direction:column; gap:6px; margin-top:18px; }
+  #authForm label{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--muted); margin-top:10px;
+  }
+  #authForm input{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    padding:11px 13px; color:var(--ink); font-family:'Sora', sans-serif; font-size:0.95rem;
+  }
+  #authForm input:focus-visible{ border-color:var(--focus); }
+  .auth-error{ color:var(--accent-pink); font-size:0.82rem; min-height:1.2em; line-height:1.4; }
+  .auth-submit{ width:100%; justify-content:center; margin-top:6px; }
+
+  .signin-hint{
+    background:none; border:none; color:var(--focus); text-decoration:underline; text-underline-offset:2px;
+    cursor:pointer; font-size:0.82rem; padding:0; text-align:left;
+  }
+  .auth-gate{
+    background:var(--surface); border:1px solid var(--line); border-radius:18px;
+    padding:36px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px;
+  }
+  .auth-gate[hidden]{ display:none; }
+  .auth-gate p{ color:var(--muted); max-width:46ch; margin:0; }
+
   /* ---------- SCROLL REVEAL (safe fallback: visible unless JS adds pre-reveal) ---------- */
   .reveal{ opacity:1; transform:none; transition:opacity 0.7s ease, transform 0.7s ease; }
   .reveal.pre-reveal{ opacity:0; transform:translateY(18px); }
@@ -455,8 +525,28 @@
           <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
           <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
         </div>
-        <span id="navStatus" class="mono">0 places · $0</span>
+        <div id="authArea" class="auth-area mono"></div>
       </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="authBackdrop" hidden>
+    <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <button type="button" class="modal-close" id="authCloseBtn" aria-label="Close">&times;</button>
+      <div class="auth-tabs" role="group" aria-label="Sign in or create account">
+        <button type="button" class="auth-tab" data-mode="login" aria-pressed="true" data-i18n="authTabLogin">Sign in</button>
+        <button type="button" class="auth-tab" data-mode="signup" aria-pressed="false" data-i18n="authTabSignup">Create account</button>
+      </div>
+      <h3 id="authModalTitle" data-i18n="authTitleLogin">Welcome back</h3>
+      <p class="auth-sub" data-i18n="authSubLogin">Sign in to pick up your trip where you left off.</p>
+      <form id="authForm" novalidate>
+        <label for="authEmail" data-i18n="authEmailLabel">Email</label>
+        <input type="email" id="authEmail" required autocomplete="email" inputmode="email">
+        <label for="authPassword" data-i18n="authPasswordLabel">Password</label>
+        <input type="password" id="authPassword" required autocomplete="current-password" minlength="8">
+        <div class="auth-error" id="authError" aria-live="polite"></div>
+        <button type="submit" class="hero-cta auth-submit" id="authSubmitBtn" data-i18n="authTabLogin">Sign in</button>
+      </form>
     </div>
   </div>
 
@@ -603,22 +693,29 @@
     <div class="section-head">
       <div class="eyebrow" data-i18n="planEyebrow">Your call</div>
       <h2 data-i18n="planHeading">Build your trip</h2>
-      <p data-i18n="planDesc">Set how many days you've got, then assign places from Explore above. Your plan saves automatically on this device.</p>
+      <p data-i18n="planDesc">Sign in to build your own day-by-day itinerary &mdash; it saves to your account and follows you to any device.</p>
     </div>
-    <div class="planner-bar reveal">
-      <div class="field">
-        <label for="dayCountInput" data-i18n="tripLength">Trip length</label>
-        <input type="number" id="dayCountInput" min="3" max="10" value="7" aria-describedby="dayCountUnit"/>
-        <span id="dayCountUnit" class="mono" data-i18n="daysUnit" style="font-size:0.8rem;color:var(--muted);">days</span>
+    <div id="authGate" class="auth-gate reveal" hidden>
+      <h3 data-i18n="gateTitle">Sign in to start planning</h3>
+      <p data-i18n="gateBody">Create a free account to build and save your own itinerary.</p>
+      <button type="button" class="hero-cta" id="gateSignInBtn" data-i18n="authTabLogin">Sign in</button>
+    </div>
+    <div id="plannerContent" hidden>
+      <div class="planner-bar reveal">
+        <div class="field">
+          <label for="dayCountInput" data-i18n="tripLength">Trip length</label>
+          <input type="number" id="dayCountInput" min="3" max="10" value="7" aria-describedby="dayCountUnit"/>
+          <span id="dayCountUnit" class="mono" data-i18n="daysUnit" style="font-size:0.8rem;color:var(--muted);">days</span>
+        </div>
+        <div class="spacer"></div>
+        <div class="planner-total mono" id="plannerTotal">Estimated budget: <b>$0</b></div>
+        <span id="dbStatus" class="mono db-status" aria-live="polite"></span>
+        <button class="ghost-btn" type="button" id="copyBtn" data-i18n="copyPlan">Copy plan</button>
+        <button class="ghost-btn" type="button" id="clearBtn" data-i18n="clearPlan">Clear plan</button>
+        <span id="copyStatus" class="mono" aria-live="polite"></span>
       </div>
-      <div class="spacer"></div>
-      <div class="planner-total mono" id="plannerTotal">Estimated budget: <b>$0</b></div>
-      <span id="dbStatus" class="mono db-status" aria-live="polite"></span>
-      <button class="ghost-btn" type="button" id="copyBtn" data-i18n="copyPlan">Copy plan</button>
-      <button class="ghost-btn" type="button" id="clearBtn" data-i18n="clearPlan">Clear plan</button>
-      <span id="copyStatus" class="mono" aria-live="polite"></span>
+      <div class="planner-days" id="plannerDays"></div>
     </div>
-    <div class="planner-days" id="plannerDays"></div>
   </section>
 
   <section class="section" id="before-you-go">
@@ -694,7 +791,7 @@
       linkLearnMore:"Learn more", linkMap:"Map", linkTickets:"Tickets", linkReserve:"Reserve", linkNoTicket:"No ticket needed",
       addToDay:"Add to day",
       planEyebrow:"Your call", planHeading:"Build your trip",
-      planDesc:"Set how many days you've got, then assign places from Explore above. Your plan saves to the database automatically — open this page anywhere and it's still there.",
+      planDesc:"Sign in to build your own day-by-day itinerary — it saves to your account and follows you to any device.",
       tripLength:"Trip length", daysUnit:"days",
       estimatedBudget:"Estimated budget: ",
       copyPlan:"Copy plan", clearPlan:"Clear plan",
@@ -713,7 +810,20 @@
       footerCredit:"Place photography via Wikimedia Commons contributors, CC BY / CC BY-SA — hover any photo for credit.",
       planTitle:"My Wuhan Trip Plan", dayWord:"Day", nothingPlannedCopy:"(nothing planned)",
       placeWord:" place · $", placesWord:" places · $",
-      snapAria:"Photo preview of Wuhan"
+      snapAria:"Photo preview of Wuhan",
+      signInBtn:"Sign in", signOutBtn:"Sign out", signInToAdd:"Sign in to add this to your trip",
+      gateTitle:"Sign in to start planning", gateBody:"Create a free account to build and save your own itinerary — it'll follow you to any device.",
+      authTabLogin:"Sign in", authTabSignup:"Create account",
+      authTitleLogin:"Welcome back", authTitleSignup:"Let's get you set up",
+      authSubLogin:"Sign in to pick up your trip where you left off.",
+      authSubSignup:"One email and password — no verification email, just a place to save your plan.",
+      authEmailLabel:"Email", authPasswordLabel:"Password",
+      authErr_invalid_email:"That doesn't look like a valid email address.",
+      authErr_weak_password:"Password needs to be at least 8 characters.",
+      authErr_email_taken:"An account with that email already exists — try signing in instead.",
+      authErr_invalid_credentials:"Email or password is wrong.",
+      authErr_missing_fields:"Enter an email and password.",
+      authErr_server_error:"Something went wrong — try again in a moment."
     },
     zh: {
       navMap:"地图", navExplore:"探索", navPlan:"规划", navBefore:"行前须知",
@@ -743,7 +853,7 @@
       linkLearnMore:"了解详情", linkMap:"地图", linkTickets:"门票", linkReserve:"预约", linkNoTicket:"无需门票",
       addToDay:"加入日期",
       planEyebrow:"你说了算", planHeading:"规划你的行程",
-      planDesc:"先定好一共去几天，再从上面选地点加进来。行程会自动保存到数据库——换个设备打开也还在。",
+      planDesc:"登录后就能规划属于你自己的行程——保存在你的账号里，换哪台设备打开都还在。",
       tripLength:"行程天数", daysUnit:"天",
       estimatedBudget:"预估预算：",
       copyPlan:"复制行程", clearPlan:"清空行程",
@@ -762,7 +872,20 @@
       footerCredit:"地点照片均来自 Wikimedia Commons 贡献者，遵循 CC BY / CC BY-SA 协议——把鼠标移到照片上可以看到署名。",
       planTitle:"我的武汉行程", dayWord:"第", nothingPlannedCopy:"（空着）",
       placeWord:" 个地点 · $", placesWord:" 个地点 · $",
-      snapAria:"武汉照片预览"
+      snapAria:"武汉照片预览",
+      signInBtn:"登录", signOutBtn:"退出登录", signInToAdd:"登录后即可加入行程",
+      gateTitle:"登录后开始规划", gateBody:"免费注册一个账号，就能建立并保存属于你自己的行程——换哪台设备打开都还在。",
+      authTabLogin:"登录", authTabSignup:"注册账号",
+      authTitleLogin:"欢迎回来", authTitleSignup:"来注册一个账号",
+      authSubLogin:"登录后继续你上次没规划完的行程。",
+      authSubSignup:"只需要邮箱和密码——不用验证邮件，就是给你一个保存行程的地方。",
+      authEmailLabel:"邮箱", authPasswordLabel:"密码",
+      authErr_invalid_email:"这个邮箱地址看起来不太对。",
+      authErr_weak_password:"密码至少需要 8 位。",
+      authErr_email_taken:"这个邮箱已经注册过了，试试直接登录。",
+      authErr_invalid_credentials:"邮箱或密码不对。",
+      authErr_missing_fields:"请输入邮箱和密码。",
+      authErr_server_error:"出了点问题，稍后再试一次。"
     }
   };
 
@@ -882,6 +1005,8 @@
 
   var currentFilter = "all";
   var currentLang = "en";
+  var currentUser = null;
+  var authMode = "login";
   var state = { days: 7, assign: {} };
 
   function loadState(){
@@ -913,6 +1038,7 @@
   }
   function syncToServer(){
     cacheLocally();
+    if (!currentUser) return;
     setDbStatus(currentLang === "zh" ? "正在保存…" : "Saving…", false);
     fetch("/api/plan", {
       method: "POST",
@@ -922,22 +1048,30 @@
       if (!r.ok) throw new Error("save failed");
       setDbStatus(currentLang === "zh" ? "已保存到数据库" : "Saved to database", false);
     }).catch(function(){
-      setDbStatus(currentLang === "zh" ? "离线：仅保存在本机" : "Offline: saved on this device only", true);
+      setDbStatus(currentLang === "zh" ? "保存失败，请检查网络" : "Couldn't save — check your connection", true);
     });
   }
   function saveState(){ syncToServer(); }
   function saveLang(){ syncToServer(); }
 
-  function loadFromServer(){
+  // After a successful sign-in/sign-up: if this account has no saved plan yet
+  // but the visitor already built one anonymously in this browser, claim it
+  // for the account. Otherwise the account's saved plan wins.
+  function syncAfterLogin(){
     fetch("/api/plan").then(function(r){
       if (!r.ok) throw new Error("load failed");
       return r.json();
     }).then(function(plan){
-      if (!plan || typeof plan !== "object") return;
-      if (Number.isInteger(plan.days)) state.days = plan.days;
-      if (plan.assign && typeof plan.assign === "object") state.assign = plan.assign;
-      if (plan.lang === "en" || plan.lang === "zh") currentLang = plan.lang;
-      cacheLocally();
+      var serverEmpty = !plan || !plan.assign || Object.keys(plan.assign).length === 0;
+      var localHasData = state.assign && Object.keys(state.assign).length > 0;
+      if (serverEmpty && localHasData){
+        syncToServer();
+      } else if (plan){
+        state.days = Number.isInteger(plan.days) ? plan.days : 7;
+        state.assign = (plan.assign && typeof plan.assign === "object") ? plan.assign : {};
+        if (plan.lang === "en" || plan.lang === "zh") currentLang = plan.lang;
+        cacheLocally();
+      }
       document.getElementById("dayCountInput").value = state.days;
       applyI18n();
       renderTabs();
@@ -946,8 +1080,92 @@
       renderPlanner();
       setDbStatus(currentLang === "zh" ? "已从数据库加载" : "Loaded from database", false);
     }).catch(function(){
-      setDbStatus(currentLang === "zh" ? "离线：仅显示本机数据" : "Offline: showing this device's data only", true);
+      setDbStatus(currentLang === "zh" ? "加载失败，请重试" : "Couldn't load your trip", true);
     });
+  }
+
+  function renderAuthArea(){
+    var el = document.getElementById("authArea");
+    if (!el) return;
+    if (currentUser){
+      el.innerHTML =
+        '<div class="auth-identity">' +
+          '<span class="auth-email">' + currentUser.email + '</span>' +
+          '<button type="button" class="auth-signout-btn" id="authSignOutBtn">' + t("signOutBtn") + '</button>' +
+        '</div>';
+      var out = document.getElementById("authSignOutBtn");
+      if (out) out.addEventListener("click", signOut);
+    } else {
+      el.innerHTML = '<button type="button" class="auth-signin-btn" id="navSignInBtn">' + t("signInBtn") + '</button>';
+      var inBtn = document.getElementById("navSignInBtn");
+      if (inBtn) inBtn.addEventListener("click", function(){ openAuthModal("login"); });
+    }
+  }
+
+  function updatePlanGateVisibility(){
+    var gate = document.getElementById("authGate");
+    var content = document.getElementById("plannerContent");
+    if (!gate || !content) return;
+    gate.hidden = !!currentUser;
+    content.hidden = !currentUser;
+  }
+
+  function signOut(){
+    fetch("/api/auth/logout", { method: "POST" }).catch(function(){}).then(function(){
+      currentUser = null;
+      state.assign = {};
+      try{ localStorage.removeItem("wuhanTripPlan_v1"); }catch(e){}
+      setDbStatus("", false);
+      renderAuthArea();
+      updatePlanGateVisibility();
+      renderExplore();
+      renderPlanner();
+    });
+  }
+
+  function checkAuth(){
+    fetch("/api/auth/me").then(function(r){ return r.json(); }).then(function(data){
+      currentUser = (data && data.user) ? data.user : null;
+      renderAuthArea();
+      updatePlanGateVisibility();
+      renderExplore();
+      if (currentUser) syncAfterLogin();
+    }).catch(function(){
+      currentUser = null;
+      renderAuthArea();
+      updatePlanGateVisibility();
+    });
+  }
+
+  function openAuthModal(mode){
+    setAuthMode(mode || "login");
+    var errEl = document.getElementById("authError");
+    if (errEl) errEl.textContent = "";
+    var form = document.getElementById("authForm");
+    if (form) form.reset();
+    var backdrop = document.getElementById("authBackdrop");
+    if (backdrop) backdrop.hidden = false;
+    var emailInput = document.getElementById("authEmail");
+    if (emailInput) emailInput.focus();
+  }
+  function closeAuthModal(){
+    var backdrop = document.getElementById("authBackdrop");
+    if (backdrop) backdrop.hidden = true;
+  }
+  function setAuthMode(mode){
+    authMode = mode;
+    document.querySelectorAll(".auth-tab").forEach(function(btn){
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-mode") === mode ? "true" : "false");
+    });
+    var isLogin = mode === "login";
+    var titleEl = document.getElementById("authModalTitle");
+    var subEl = document.querySelector(".auth-sub");
+    var submitEl = document.getElementById("authSubmitBtn");
+    var pwEl = document.getElementById("authPassword");
+    if (titleEl) titleEl.textContent = isLogin ? t("authTitleLogin") : t("authTitleSignup");
+    if (subEl) subEl.textContent = isLogin ? t("authSubLogin") : t("authSubSignup");
+    if (submitEl) submitEl.textContent = isLogin ? t("authTabLogin") : t("authTabSignup");
+    if (pwEl) pwEl.setAttribute("autocomplete", isLogin ? "current-password" : "new-password");
   }
 
   function t(key){ return (I18N[currentLang] && I18N[currentLang][key] !== undefined) ? I18N[currentLang][key] : I18N.en[key]; }
@@ -967,6 +1185,8 @@
     document.querySelectorAll(".lang-btn").forEach(function(btn){
       btn.setAttribute("aria-pressed", btn.getAttribute("data-lang") === currentLang ? "true" : "false");
     });
+    renderAuthArea();
+    if (typeof setAuthMode === "function") setAuthMode(authMode);
   }
 
   document.querySelectorAll(".lang-btn").forEach(function(btn){
@@ -1064,13 +1284,19 @@
     el.innerHTML = list.map(function(p){
       var cat = CATS[p.category];
       var name = p.name[currentLang];
-      var dayChips = "";
-      for (var d = 1; d <= state.days; d++){
-        var pressed = state.assign[p.id] === d;
-        var ariaLabel = currentLang === "zh"
-          ? (pressed ? "从第 " + d + " 天移除 " + name : "把 " + name + " 加入第 " + d + " 天")
-          : (pressed ? "Remove " + name + " from Day " + d : "Add " + name + " to Day " + d);
-        dayChips += '<button type="button" class="day-chip" style="--cc:var(' + cat.varName + ')" data-place="' + p.id + '" data-day="' + d + '" aria-pressed="' + (pressed ? "true" : "false") + '" aria-label="' + ariaLabel + '">' + d + '</button>';
+      var dayPickerHtml;
+      if (!currentUser){
+        dayPickerHtml = '<div class="day-picker"><button type="button" class="signin-hint" data-open-auth>' + t("signInToAdd") + '</button></div>';
+      } else {
+        var dayChips = "";
+        for (var d = 1; d <= state.days; d++){
+          var pressed = state.assign[p.id] === d;
+          var ariaLabel = currentLang === "zh"
+            ? (pressed ? "从第 " + d + " 天移除 " + name : "把 " + name + " 加入第 " + d + " 天")
+            : (pressed ? "Remove " + name + " from Day " + d : "Add " + name + " to Day " + d);
+          dayChips += '<button type="button" class="day-chip" style="--cc:var(' + cat.varName + ')" data-place="' + p.id + '" data-day="' + d + '" aria-pressed="' + (pressed ? "true" : "false") + '" aria-label="' + ariaLabel + '">' + d + '</button>';
+        }
+        dayPickerHtml = '<div class="day-picker"><span class="pp-label">' + t("addToDay") + '</span><div class="day-chips">' + dayChips + '</div></div>';
       }
       var ticketHtml;
       if (p.ticket === "free"){
@@ -1095,10 +1321,7 @@
               '<a href="' + mapsUrl(p.mapQuery) + '" target="_blank" rel="noopener">' + t("linkMap") + '</a>' +
               ticketHtml +
             '</div>' +
-            '<div class="day-picker">' +
-              '<span class="pp-label">' + t("addToDay") + '</span>' +
-              '<div class="day-chips">' + dayChips + '</div>' +
-            '</div>' +
+            dayPickerHtml +
           '</div>' +
         '</div>';
     }).join("");
@@ -1212,6 +1435,58 @@
     }
   });
 
+  document.querySelectorAll(".auth-tab").forEach(function(btn){
+    btn.addEventListener("click", function(){ setAuthMode(btn.getAttribute("data-mode")); });
+  });
+  document.getElementById("authCloseBtn").addEventListener("click", closeAuthModal);
+  document.getElementById("authBackdrop").addEventListener("click", function(e){
+    if (e.target === e.currentTarget) closeAuthModal();
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape"){
+      var backdrop = document.getElementById("authBackdrop");
+      if (backdrop && !backdrop.hidden) closeAuthModal();
+    }
+  });
+  document.getElementById("gateSignInBtn").addEventListener("click", function(){ openAuthModal("login"); });
+  document.addEventListener("click", function(e){
+    var hint = e.target.closest("[data-open-auth]");
+    if (hint) openAuthModal("login");
+  });
+  document.getElementById("authForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var email = document.getElementById("authEmail").value.trim();
+    var password = document.getElementById("authPassword").value;
+    var errEl = document.getElementById("authError");
+    var submitBtn = document.getElementById("authSubmitBtn");
+    errEl.textContent = "";
+    submitBtn.disabled = true;
+    var endpoint = authMode === "login" ? "/api/auth/login" : "/api/auth/signup";
+    fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password })
+    }).then(function(r){
+      return r.json().then(function(data){ return { ok: r.ok, data: data }; });
+    }).then(function(res){
+      submitBtn.disabled = false;
+      if (!res.ok){
+        var code = (res.data && res.data.error) || "server_error";
+        errEl.textContent = t("authErr_" + code) || t("authErr_server_error");
+        return;
+      }
+      currentUser = { email: res.data.email };
+      closeAuthModal();
+      renderAuthArea();
+      updatePlanGateVisibility();
+      renderExplore();
+      syncAfterLogin();
+    }).catch(function(){
+      submitBtn.disabled = false;
+      errEl.textContent = t("authErr_server_error");
+    });
+  });
+
   loadState();
   document.getElementById("dayCountInput").value = state.days;
   applyI18n();
@@ -1220,6 +1495,7 @@
   renderExplore();
   renderPlanner();
   setupReveals(document);
-  loadFromServer();
+  renderAuthArea();
+  checkAuth();
 })();
 </script>
